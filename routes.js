@@ -42,7 +42,9 @@ const requestHandler = (req, res) => {
                 }
             });
         });
-    } else {
+    } 
+    
+    else {
         res.setHeader('Content-Type', 'text/html');
         res.write('<html>');
         res.write('<head><title>My First Page</title></head>');
@@ -52,14 +54,14 @@ const requestHandler = (req, res) => {
     }
 };
 
-module.exports =requestHandler;
+//module.exports =requestHandler;
 /*module.exports = {
     handler: requestHandler,
     someText: 'Some hard coded text'
 };*/
 
-//module.exports.handler = requestHandler;
-//module.exports.someText = 'Some hard coded text';
+module.exports.handler = requestHandler;
+module.exports.someText = 'Some hard coded text';
 
 //exports.handler = requestHandler;
 //exports.someText = 'Some hard coded text';
