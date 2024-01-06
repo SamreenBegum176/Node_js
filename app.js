@@ -1,22 +1,15 @@
-const http = require('http');
+const express = require('express');
 
-const server = http.createServer((req, res) => {
-    console.log(req.url, req.method, req.headers);
+const app = express();
 
-    if (req.url === '/home') {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>Welcome home</h1></body></html>');
-    } else if (req.url === '/about') {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>Welcome to About Us page</h1></body></html>');
-    } else if (req.url === '/node') {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>Welcome to my Node.js project</h1></body></html>');
-    } else {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>Page Not Found</h1></body></html>');
-    }
+app.use((req, res, next) => {
+    console.log("In the middleware");
+    next(); // Allows the request to continue to the next middleware in line
 });
-server.listen(3000, () => {
-    console.log('Server is running on port 4000');
+
+app.use((req, res, next) => {
+    console.log("Tn the another middleware");
+    res.send('<h1>Hello from Express js!</h1>');
 });
+
+app.listen(4000);
