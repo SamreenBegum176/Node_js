@@ -3,65 +3,66 @@ const fs = require('fs');
 const requestHandler = (req, res) => {
     const url = req.url;
     const method = req.method;
-    if(url === '/'){
-        fs.readFile('message.txt', 'utf8', (err, data) => {
-            if(err){
+    if (url === '/') {
+        fs.readFile("message.txt", { encoding: "utf-8"}, (err, data) => {
+            if (err) {
                 console.error(err);
-            } else {
-                const messages = data ? data.split('\n') : [];
-    
-                res.write('<html>');
-                res.write('<head><title>Enter Message</title></head>');
-                res.write('<body>');
-                messages.forEach(message => {
-                    if(message.trim() !== ''){
-                        res.write(`${message}`);
-                    }
-                });
-                res.write('<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form>');
-                res.write('</body>');
-                res.write('</html>');
-                return res.end();
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                return res.end('Internal Server Error');
             }
+    
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.write('<html>');
+            res.write('<head><title>Enter Message</title>');
+            res.write('<style>body { font-family: Arial, sans-serif; background-color: #f4f4f4; }</style>');
+            res.write('</head>');
+            res.write('<body>');
+            res.write(`<h1>Welcome to my Node.js Server</h1>`);
+            res.write(`<div>${data}</div>`);
+            res.write('<form action="/message" method="POST">');
+            res.write('<input type="text" name="message" placeholder="Enter your message">');
+            res.write('<button type="submit">Send</button>');
+            res.write('</form>');
+            res.write('</body>');
+            res.write('</html>');
+            return res.end();
         });
-    } else if(url === '/message' && method === 'POST'){
+    } else if (url === '/message' && method === 'POST') {
         const body = [];
         req.on('data', (chunk) => {
             body.push(chunk);
         });
+    
         req.on('end', () => {
             const parseBody = Buffer.concat(body).toString();
             const message = parseBody.split('=')[1];
-            fs.writeFile('message.txt', message + '\n', (err) => {
-                if(err){
+            fs.writeFile('message.txt', message, (err) => {
+                if (err) {
                     console.error(err);
-                } else {
-                    res.statusCode = 302;
-                    res.setHeader('Location', '/');
+                    res.statusCode = 500;
                     return res.end();
                 }
+                res.statusCode = 302;
+                res.setHeader('Location', '/');
+                res.end();
             });
         });
-    } 
-    
-    else {
+        return;
+    } else {
         res.setHeader('Content-Type', 'text/html');
         res.write('<html>');
         res.write('<head><title>My First Page</title></head>');
-        res.write('<body><h1>Hello from my Node.js Server!</h1></body>');
+        res.write('<body style="font-family: Arial, sans-serif; background-color: #f4f4f4;">');
+        res.write('<h1>Hello from my Node.js Server</h1>');
+        res.write('</body>');
         res.write('</html>');
-        return res.end();
+        res.end();
     }
-};
+}
 
-//module.exports =requestHandler;
-/*module.exports = {
+//if we have multiple exports then
+module.exports = {
     handler: requestHandler,
     someText: 'Some hard coded text'
-};*/
-
-module.exports.handler = requestHandler;
-module.exports.someText = 'Some hard coded text';
-
-//exports.handler = requestHandler;
-//exports.someText = 'Some hard coded text';
+}
+//module.exports = requestHandler; // Exporting this file to app.js with the help request Hanlder
